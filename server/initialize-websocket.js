@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import { io } from 'socket.io-client';
+import { setIsRecordingRunning, getIsRecordingRunning } from './recording.js';
 
 export const initializeWebsocket = (httpServer) => {
   const serverSocket = new Server(httpServer, {
@@ -8,16 +9,19 @@ export const initializeWebsocket = (httpServer) => {
     }
   });
 
-  serverSocket.on('connection', socket => {
+  serverSocket.on('connection', clientSocket => {
     console.log('a user connected');
 
-    socket.on('disconnect', () => {
+    clientSocket.on('disconnect', () => {
       console.log('user disconnected');
     });
 
-    socket.on('update-recording-status', isRecordingRunning => {
-      socket.broadcast.emit('update-recording-status', isRecordingRunning);
+    clientSocket.on('update-recording-status', isRecordingRunning => {
+      setIsRecordingRunning(isRecordingRunning);
+      clientSocket.broadcast.emit('update-recording-status', isRecordingRunning);
     });
+
+    clientSocket.emit('update-recording-status', getIsRecordingRunning());
   });
 
   const boatPositionStreamerClientSocket = io("http://localhost:6789");
