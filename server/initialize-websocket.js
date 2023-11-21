@@ -30,18 +30,22 @@ export const initializeWebsocket = (httpServer) => {
     clientSocket.emit('update-recording-status', isRecordingRunning());
   });
 
-  const boatPositionStreamerClientSocket = io("http://localhost:6789");
-  boatPositionStreamerClientSocket.on('boat-position', async positionRaw => {
-    const position = {
-      latitude: positionRaw.lat,
-      longitude: positionRaw.lon,
-      heading: positionRaw.heading
-    };
-
+  startListeningForBoatPositionUpdates(async position => {
     if (isRecordingRunning()) {
       await recordPosition(getCurrentTrackId(), position);
     }
 
-    serverSocket.emit('boat-position', position)
+    serverSocket.emit('boat-position', position);
+  });
+};
+
+const startListeningForBoatPositionUpdates = (handleNewPosition) => {
+  const boatPositionStreamerClientSocket = io("http://localhost:6789");
+  boatPositionStreamerClientSocket.on('boat-position', async positionRaw => {
+    await handleNewPosition({
+      latitude: positionRaw.lat,
+      longitude: positionRaw.lon,
+      heading: positionRaw.heading
+    });
   });
 };
