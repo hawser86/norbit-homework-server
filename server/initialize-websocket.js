@@ -7,7 +7,7 @@ import {
   startRecording,
   stopRecording
 } from './recording.js';
-import { loadTrackList, recordPosition } from "./db.js";
+import { loadPositionsForTrack, loadTrackList, recordPosition } from "./db.js";
 
 export const initializeWebsocket = (httpServer) => {
   const serverSocket = new Server(httpServer, {
@@ -32,6 +32,10 @@ export const initializeWebsocket = (httpServer) => {
       }
 
       clientSocket.broadcast.emit('update-recording-status', isRecordingRunning);
+    });
+
+    clientSocket.on('load-track', async trackId => {
+      serverSocket.emit('loaded-track', trackId, await loadPositionsForTrack(trackId));
     });
 
     clientSocket.emit('update-recording-status', isRecordingRunning());
