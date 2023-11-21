@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import { io } from 'socket.io-client';
-import { startRecording, stopRecording, isRecordingRunning, getCurrentTrackId } from './recording.js';
+import { startRecording, stopRecording, isRecordingRunning, getCurrentTrackId, loadPositionsForCurrentTrack } from './recording.js';
 import { recordPosition } from "./db.js";
 
 export const initializeWebsocket = (httpServer) => {
@@ -10,7 +10,7 @@ export const initializeWebsocket = (httpServer) => {
     }
   });
 
-  serverSocket.on('connection', clientSocket => {
+  serverSocket.on('connection', async clientSocket => {
     console.log('a user connected');
 
     clientSocket.on('disconnect', () => {
@@ -28,6 +28,10 @@ export const initializeWebsocket = (httpServer) => {
     });
 
     clientSocket.emit('update-recording-status', isRecordingRunning());
+    if (isRecordingRunning()) {
+      const positions = await loadPositionsForCurrentTrack();
+      positions.forEach(position => serverSocket.emit('boat-position', { position, shouldRecord: true }));
+    }
   });
 
   startListeningForBoatPositionUpdates(async position => {

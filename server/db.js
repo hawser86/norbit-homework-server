@@ -18,3 +18,14 @@ export const recordPosition = async (trackId, position) => {
     [trackId, position.latitude, position.longitude, position.heading]
   );
 };
+
+export const loadPositionsForTrack = async trackId => {
+  const { rows } = await client.query(`
+    SELECT latitude, longitude, heading 
+    FROM recorded_positions 
+    WHERE track_id = $1 
+    ORDER BY id
+  `, [trackId]);
+  return rows;
+};
+

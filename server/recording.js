@@ -1,4 +1,4 @@
-import { recordTrack } from './db.js';
+import { loadPositionsForTrack, recordTrack } from './db.js';
 
 let _isRecordingRunning = false;
 let _currentTrackId = null;
@@ -14,4 +14,8 @@ export const startRecording = async () => {
 
 export const stopRecording = () => {
   _isRecordingRunning = false;
+};
+
+export const loadPositionsForCurrentTrack = async () => {
+  return await loadPositionsForTrack(_currentTrackId);
 };
