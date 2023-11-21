@@ -31,11 +31,12 @@ export const initializeWebsocket = (httpServer) => {
   });
 
   startListeningForBoatPositionUpdates(async position => {
-    if (isRecordingRunning()) {
+    const isRunning = isRecordingRunning();
+    if (isRunning) {
       await recordPosition(getCurrentTrackId(), position);
     }
 
-    serverSocket.emit('boat-position', position);
+    serverSocket.emit('boat-position', { position, shouldRecord: isRunning });
   });
 };
 
