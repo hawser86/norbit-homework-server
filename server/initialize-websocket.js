@@ -14,6 +14,10 @@ export const initializeWebsocket = (httpServer) => {
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
+
+    socket.on('update-recording-status', isRecordingRunning => {
+      socket.broadcast.emit('update-recording-status', isRecordingRunning);
+    });
   });
 
   const boatPositionStreamerClientSocket = io("http://localhost:6789");
