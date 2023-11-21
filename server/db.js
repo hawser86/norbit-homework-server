@@ -29,3 +29,11 @@ export const loadPositionsForTrack = async trackId => {
   return rows;
 };
 
+export const loadTrackList = async () => {
+  const { rows } = await client.query(`
+    SELECT * 
+    FROM recorded_tracks 
+    ORDER BY name
+  `);
+  return rows;
+};
