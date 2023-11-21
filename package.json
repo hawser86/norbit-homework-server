@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node server/index.js"
+    "dev": "node server/index.js",
+    "start-fake-streamer": "node fake-boat-position-streamer/index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
