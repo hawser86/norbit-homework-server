@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "node -r dotenv/config server/index.js",
     "start-fake-streamer": "node fake-boat-position-streamer/index.js",
-    "db-migrate": "db-migrate up"
+    "db-migrate": "db-migrate up",
+    "docker-up": "docker-compose up -d",
+    "docker-down": "docker-compose down"
   },
   "dependencies": {
     "express": "^4.18.2",
