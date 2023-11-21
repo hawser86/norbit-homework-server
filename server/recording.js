@@ -1,4 +1,11 @@
-let isRecordingRunning = false;
+let _isRecordingRunning = false;
 
-export const getIsRecordingRunning = () => isRecordingRunning;
-export const setIsRecordingRunning = isRunning => isRecordingRunning = isRunning;
+export const isRecordingRunning = () => _isRecordingRunning;
+
+export const startRecording = async () => {
+  _isRecordingRunning = true;
+};
+
+export const stopRecording = () => {
+  _isRecordingRunning = false;
+};
