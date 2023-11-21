@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import { io } from 'socket.io-client';
-import { startRecording, stopRecording, isRecordingRunning } from './recording.js';
+import { startRecording, stopRecording, isRecordingRunning, getCurrentTrackId } from './recording.js';
+import { recordPosition } from "./db.js";
 
 export const initializeWebsocket = (httpServer) => {
   const serverSocket = new Server(httpServer, {
@@ -30,11 +31,17 @@ export const initializeWebsocket = (httpServer) => {
   });
 
   const boatPositionStreamerClientSocket = io("http://localhost:6789");
-  boatPositionStreamerClientSocket.on('boat-position', position => {
-    serverSocket.emit('boat-position', {
-      latitude: position.lat,
-      longitude: position.lon,
-      heading: position.heading
-    })
+  boatPositionStreamerClientSocket.on('boat-position', async positionRaw => {
+    const position = {
+      latitude: positionRaw.lat,
+      longitude: positionRaw.lon,
+      heading: positionRaw.heading
+    };
+
+    if (isRecordingRunning()) {
+      await recordPosition(getCurrentTrackId(), position);
+    }
+
+    serverSocket.emit('boat-position', position)
   });
 };
